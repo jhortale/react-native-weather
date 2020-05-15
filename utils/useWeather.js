@@ -44,7 +44,7 @@ import useGeoLocation from "./useGeoLocation";
 // // fetch api with axios
 const url = "https://api.openweathermap.org/data/2.5";
 
-let key = "109ec75cabfcbbed3d014b7166ad30bd"; // se puder faz uma key para vc por favor. a minha só tem poucos fetches e ainda preciso finalizar o UI... https://openweathermap.org/api
+let key = "KEY"; // se puder faz uma key para vc por favor. a minha só tem poucos fetches e ainda preciso finalizar o UI... https://openweathermap.org/api
 
 const headers = {
   Accept: "application/json",
