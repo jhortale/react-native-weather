@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { storeWeather, getWeather } from "./storeWeather";
+import useGeoLocation from "./useGeoLocation";
 
 // const url = "https://reactnd-books-api.udacity.com";
 
@@ -43,7 +44,7 @@ import { storeWeather, getWeather } from "./storeWeather";
 // // fetch api with axios
 const url = "https://api.openweathermap.org/data/2.5";
 
-let key = "SEU-TOKEN"; // se puder faz uma key para vc por favor. a minha só tem poucos fetches e ainda preciso finalizar o UI... https://openweathermap.org/api
+let key = "109ec75cabfcbbed3d014b7166ad30bd"; // se puder faz uma key para vc por favor. a minha só tem poucos fetches e ainda preciso finalizar o UI... https://openweathermap.org/api
 
 const headers = {
   Accept: "application/json",
@@ -57,11 +58,16 @@ const callAPI = axios.create({
 });
 
 export default function useWeather(lat, lon) {
-  const [weather, setWeather] = useState([]);
+  const [weather, setWeather] = useState(null);
+
+  const latLon = useGeoLocation();
 
   useEffect(() => {
-    fetchAPI(lat, lon);
-  }, []);
+    if (latLon) {
+      fetchAPI(...latLon);
+    }
+  }, [latLon]);
+
   const fetchAPI = (lat, lon) => {
     callAPI
       .get(`/forecast?lat=${lat}&lon=${lon}&appid=${key}`)
@@ -81,17 +87,16 @@ export default function useWeather(lat, lon) {
           list: res.data.list,
         };
         storeWeather(dataAPI);
-        return { isLoading: false };
+        return getWeather();
+      })
+      .then((data) => {
+        setWeather(data);
       })
       .catch((err) => {
+        setWeather(getWeather());
         console.log(err);
-      })
-      .then(() => {
-        getWeather().then((data) => {
-          setWeather(data);
-          setIsLoading(false);
-        });
       });
   };
-  return { isLoading, weather };
+
+  return weather;
 }
