@@ -1,4 +1,4 @@
-# <img src="./assets/icons/sun.png" style="width: 24px;"/> react-native-weather
+# react-native-weather
 
 ## About
 
