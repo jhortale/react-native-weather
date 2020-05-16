@@ -1,45 +1,58 @@
 import React from "react";
-import { ScrollView, View, Text, StyleSheet } from "react-native";
-import PropTypes from "prop-types";
+import { isSameDay, format } from "date-fns";
+import Card from "./Card";
+import {
+  Container,
+  CurrentDay,
+  City,
+  BigText,
+  BigIcon,
+  Temp,
+  Description,
+  Week,
+} from "./Styles";
 
-const Weather = (props) => {
-  // console.log(data.json);
-  // const {
-  //   cod,
-  //   message,
-  //   cnt,
-  //   list,
-  //   city: { name },
-  // } = data;
+const Weather = ({ forecast: { name, list } }) => {
+  const currentWeather = list.filter((day) => {
+    const dt = new Date(day.dt_txt);
+    const now = new Date();
+    return isSameDay(now, dt);
+  });
+
+  const daysByHour = list.map((day) => {
+    const dt = new Date(day.dt_txt);
+    return {
+      date: dt,
+      hour: dt.getHours(),
+      name: format(dt, "EEEE"),
+      temp: Math.round(day.main.temp),
+      icon: day.weather[0].icon,
+    };
+  });
+
   return (
-    <View>
-      <Text>{name}</Text>
-      {/* <Text>{`${list[0].dt}/${list[0].main.temp}/${list[0].weather[0].icon}/${list[0].weather[0].main}/${list[0].weather[0].description}`}</Text>
-      <ScrollView style={styles.scrollView}>
-        {list.slice(1, 7).map((i) => (
-          <Text key={i.weather[0].id}>
-            {`${i.dt}/${i.main.temp}/${i.weather[0].main}/${i.weather[0].icon}`}
-          </Text>
+    <Container>
+      <CurrentDay>
+        <City>{name}</City>
+        <BigText>Today</BigText>
+        <BigIcon
+          source={`${require(`../assets/icons/${currentWeather[0].weather[0].icon}.png`)}`}
+        />
+        <Temp>{Math.round(currentWeather[0].main.temp)}°C</Temp>
+        <Description>{currentWeather[0].weather[0].description}</Description>
+      </CurrentDay>
+      <Week horizontal={true} showsHorizontalScrollIndicator={false}>
+        {daysByHour.map((day, index) => (
+          <Card
+            key={index}
+            icon={day.icon}
+            name={day.name.substring(0, 3)}
+            temp={day.temp}
+            hour={day.hour}
+          />
         ))}
-      </ScrollView> */}
-    </View>
+      </Week>
+    </Container>
   );
 };
-
-Weather.propTypes = {};
-
 export default Weather;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // marginTop: Constants.statusBarHeight,
-  },
-  scrollView: {
-    backgroundColor: "pink",
-    marginHorizontal: 20,
-  },
-  text: {
-    fontSize: 42,
-  },
-});
