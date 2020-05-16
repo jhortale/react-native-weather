@@ -10,9 +10,6 @@ export default function useGeoLocation(lat, lon) {
       },
       (err) => {
         console.log(err);
-        // setError({
-        //   error: "Error Gettig Weather Condtions",
-        // });
       }
     );
   }, []);

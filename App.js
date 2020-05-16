@@ -5,11 +5,10 @@ import Weather from "./components/Weather";
 
 export default function App() {
   const weather = useWeather();
-
+  console.log(weather);
   return (
-    // como acessar de forma global o stete de weather para passar aqui no component?
     <View style={styles.container}>
-      {weather ? <Text>Loading...</Text> : <Weather forecast={weather} />}
+      {!weather ? <Text>Loading...</Text> : <Weather forecast={weather} />}
     </View>
   );
 }
