@@ -1,22 +1,19 @@
 import { useState, useEffect } from "react";
+import { API_KEY } from "react-native-dotenv";
 import axios from "axios";
 import { storeWeather, getWeather } from "./storeWeather";
 import useGeoLocation from "./useGeoLocation";
 
-// // fetch api with axios
+// fetch api with axios
 const url = "https://api.openweathermap.org/data/2.5";
-
-let key = process.env.API_KEY;
 
 const headers = {
   Accept: "application/json",
-  // Authorization: token,
 };
 
 const callAPI = axios.create({
   baseURL: url,
   timeout: 1000,
-  // headers: headers,
 });
 
 export default function useWeather(lat, lon) {
@@ -30,32 +27,33 @@ export default function useWeather(lat, lon) {
     }
   }, [latLon]);
 
-  const fetchAPI = (lat, lon) => {
-    callAPI
-      .get(`/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${key}`)
-      .then((res) => {
-        const dataAPI = {
-          id: res.data.city.id,
-          name: res.data.city.name,
-          country: res.data.city.country,
-          timezone: res.data.city.timezone,
-          coord: {
-            lat: res.data.city.coord.lat,
-            lon: res.data.city.coord.lon,
-          },
-          list: res.data.list,
-        };
-        storeWeather(dataAPI);
-        return getWeather();
-      })
-      .then((data) => {
-        setWeather(data);
-      })
-      .catch((err) => {
-        getWeather().then(setWeather);
-        console.log(err);
-      });
+  const fetchAPI = async (lat, lon) => {
+    try {
+      const endpoint = `/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+      const res = await callAPI.get(endpoint);
+      storeWeather(filterData(res.data));
+      const data = await getWeather();
+      setWeather(data);
+    } catch (err) {
+      console.log("API conection failed");
+      const data = await getWeather();
+      setWeather(data);
+    }
   };
 
   return weather;
 }
+
+const filterData = (rawData) => {
+  return {
+    id: rawData.city.id,
+    name: rawData.city.name,
+    country: rawData.city.country,
+    timezone: rawData.city.timezone,
+    coord: {
+      lat: rawData.city.coord.lat,
+      lon: rawData.city.coord.lon,
+    },
+    list: rawData.list,
+  };
+};

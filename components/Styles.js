@@ -1,4 +1,5 @@
 import styled from "styled-components/native";
+
 export const Container = styled.SafeAreaView`
   flex: 1;
   background-color: #272343;
@@ -51,4 +52,21 @@ export const Week = styled.ScrollView`
   height: 150px;
   position: absolute;
   background: black;
+`;
+
+export const Day = styled.View`
+  height: 150px;
+  width: 75px;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const SmallIcon = styled.Image`
+  width: 50px;
+  height: 50px;
+`;
+export const SmallText = styled.Text`
+  font-size: 20px;
+  font-weight: 300;
+  color: white;
 `;

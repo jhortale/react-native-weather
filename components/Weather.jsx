@@ -1,6 +1,5 @@
 import React from "react";
-
-import DateConverter from "../utils/DateConverter";
+import { isSameDay, format } from "date-fns";
 import Card from "./Card";
 import {
   Container,
@@ -17,7 +16,7 @@ const Weather = ({ forecast: { name, list } }) => {
   const currentWeather = list.filter((day) => {
     const dt = new Date(day.dt_txt);
     const now = new Date();
-    return DateConverter.toString(now) === DateConverter.toString(dt);
+    return isSameDay(now, dt);
   });
 
   const daysByHour = list.map((day) => {
@@ -25,7 +24,7 @@ const Weather = ({ forecast: { name, list } }) => {
     return {
       date: dt,
       hour: dt.getHours(),
-      name: DateConverter.getDayName(day.dt),
+      name: format(dt, "EEEE"),
       temp: Math.round(day.main.temp),
       icon: day.weather[0].icon,
     };
@@ -37,9 +36,7 @@ const Weather = ({ forecast: { name, list } }) => {
         <City>{name}</City>
         <BigText>Today</BigText>
         <BigIcon
-          source={require("../assets/icons/" +
-            currentWeather[0].weather[0].icon +
-            ".png")}
+          source={`${require(`../assets/icons/${currentWeather[0].weather[0].icon}.png`)}`}
         />
         <Temp>{Math.round(currentWeather[0].main.temp)}°C</Temp>
         <Description>{currentWeather[0].weather[0].description}</Description>
