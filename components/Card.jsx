@@ -19,12 +19,13 @@ const SmallText = styled.Text`
   color: white;
 `;
 
-export default function Card({ name, icon, temp }) {
+export default function Card({ name, icon, temp, hour }) {
   return (
     <Day>
       <SmallIcon source={require("../assets/icons/" + icon + ".png")} />
       <SmallText>{name}</SmallText>
       <SmallText>{temp}°C</SmallText>
+      <SmallText>{hour === 0 ? 24 : hour}h</SmallText>
     </Day>
   );
 }

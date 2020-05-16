@@ -15,8 +15,6 @@ export default class DateConverter {
   }
   static getDayName(timestamp) {
     const dt = new Date(timestamp * 1000); // expecting date in millisencons
-    console.log(dt);
-
     const weekday = new Array(7);
     weekday[0] = "Sunday";
     weekday[1] = "Monday";
