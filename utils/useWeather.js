@@ -7,10 +7,6 @@ import useGeoLocation from "./useGeoLocation";
 // fetch api with axios
 const url = "https://api.openweathermap.org/data/2.5";
 
-const headers = {
-  Accept: "application/json",
-};
-
 const callAPI = axios.create({
   baseURL: url,
   timeout: 1000,
@@ -31,8 +27,7 @@ export default function useWeather(lat, lon) {
     try {
       const endpoint = `/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
       const res = await callAPI.get(endpoint);
-      storeWeather(filterData(res.data));
-      const data = await getWeather();
+      const data = await storeWeather(filterData(res.data));
       setWeather(data);
     } catch (err) {
       console.log("API conection failed");

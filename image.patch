@@ -1,0 +1,90 @@
+diff --git a/components/Card.jsx b/components/Card.jsx
+index 42be0cf..95b90e6 100644
+--- a/components/Card.jsx
++++ b/components/Card.jsx
+@@ -2,9 +2,17 @@ import React from "react";
+ import { Day, SmallIcon, SmallText } from "./Styles";
+ 
+ export default function Card({ name, icon, temp, hour }) {
++    let source;
++
++    try {
++        source = require(`../assets/icons/${icon}.png`);
++    } catch {
++        source = require(`../assets/icons/02d.png`);
++    }
++
+   return (
+     <Day>
+-      <SmallIcon source={`${require(`../assets/icons/${icon}.png`)}`} />
++      <SmallIcon source={source} />
+       <SmallText>{name}</SmallText>
+       <SmallText>{temp}°C</SmallText>
+       <SmallText>{hour}h</SmallText>
+diff --git a/components/Weather.jsx b/components/Weather.jsx
+index 937131e..c2a609b 100644
+--- a/components/Weather.jsx
++++ b/components/Weather.jsx
+@@ -12,11 +12,11 @@ import {
+   Week,
+ } from "./Styles";
+ 
+-const Weather = ({ forecast: { name, list } }) => {
++const Weather = ({ forecast: { name, list, timezone } }) => {
+   const currentWeather = list.filter((day) => {
+-    const dt = new Date(day.dt_txt);
+-    const now = new Date();
+-    return isSameDay(now, dt);
++    const now = new Date().getTime() + Math.abs(timezone * 1000);
++    const currentDate = new Date(day.dt_txt);
++    return isSameDay(now, currentDate);
+   });
+ 
+   const daysByHour = list.map((day) => {
+@@ -30,13 +30,19 @@ const Weather = ({ forecast: { name, list } }) => {
+     };
+   });
+ 
+-  return (
++let source;
++
++    try {
++        source = require(`../assets/icons/${currentWeather[0].weather[0].icon}.png`);
++    } catch {}
++
++  return currentWeather.length > 0 && (
+     <Container>
+       <CurrentDay>
+         <City>{name}</City>
+         <BigText>Today</BigText>
+         <BigIcon
+-          source={`${require(`../assets/icons/${currentWeather[0].weather[0].icon}.png`)}`}
++          source={source}
+         />
+         <Temp>{Math.round(currentWeather[0].main.temp)}°C</Temp>
+         <Description>{currentWeather[0].weather[0].description}</Description>
+diff --git a/utils/useWeather.js b/utils/useWeather.js
+index c052e06..a8fe149 100644
+--- a/utils/useWeather.js
++++ b/utils/useWeather.js
+@@ -7,10 +7,6 @@ import useGeoLocation from "./useGeoLocation";
+ // fetch api with axios
+ const url = "https://api.openweathermap.org/data/2.5";
+ 
+-const headers = {
+-  Accept: "application/json",
+-};
+-
+ const callAPI = axios.create({
+   baseURL: url,
+   timeout: 1000,
+@@ -31,8 +27,7 @@ export default function useWeather(lat, lon) {
+     try {
+       const endpoint = `/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+       const res = await callAPI.get(endpoint);
+-      storeWeather(filterData(res.data));
+-      const data = await getWeather();
++      const data = await storeWeather(filterData(res.data));
+       setWeather(data);
+     } catch (err) {
+       console.log("API conection failed");

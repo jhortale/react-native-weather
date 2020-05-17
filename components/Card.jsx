@@ -4,7 +4,7 @@ import { Day, SmallIcon, SmallText } from "./Styles";
 export default function Card({ name, icon, temp, hour }) {
   return (
     <Day>
-      <SmallIcon source={`${require(`../assets/icons/${icon}.png`)}`} />
+      <SmallIcon source={icon} />
       <SmallText>{name}</SmallText>
       <SmallText>{temp}°C</SmallText>
       <SmallText>{hour}h</SmallText>
